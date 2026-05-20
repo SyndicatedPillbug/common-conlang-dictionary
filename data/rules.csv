@@ -1,0 +1,17 @@
+id,stage,register,order,enabled,pattern,replacement,description,attribution
+common_001,early,all,10,true,ae,e,Collapse Latin ae to e,Latin to Romance regularization
+common_002,early,all,20,true,oe,e,Collapse Latin oe to e,Latin to Romance regularization
+common_003,early,all,30,true,qu,k,Simplify qu to k,Commonwealth orthographic leveling
+common_004,early,all,40,true,ct,kt,Preserve contract-like hard cluster,Legal/mercantile conservatism
+common_005,middle,all,50,true,c(?=[eiy]),ch,Palatalize soft c before front vowels,Romance palatalization analogue
+common_006,middle,all,60,true,ti,sh,Shift ti to sh in unstressed/palatal environments,Long-term erosion model
+common_007,late,all,70,true,us$,,Drop Latin masculine nominative ending,Anti-Latinate erosion
+common_008,late,all,80,true,um$,,Drop Latin neuter ending,Anti-Latinate erosion
+common_009,late,all,90,true,is$,,Drop residual Latin ending,Anti-Latinate erosion
+temple_001,temple_restore,temple,100,true,cord,zher,Restore mercy-root as liturgical zher/zh resonance,Temple poetic preservation
+temple_002,temple_restore,temple,110,true,elest,elestar,Restore celestial root for chant cadence,Temple poetic preservation
+board_001,boardroom_harden,boardroom,100,true,kt,kr,Harden legal clusters in Boardroom Common,Prestige legal standardization
+board_002,boardroom_harden,boardroom,110,true,alis$,d,Compress capitalis-type ending to d,Boardroom economic compression
+trade_001,trade_erode,trade,100,true,zh,j,Reduce zh to j in Trade Common,Contact-language simplification
+trade_002,trade_erode,trade,110,true,er$,,Drop final er in fast trade speech,Trade Common erosion
+trade_003,trade_erode,trade,120,true,a$,,Drop final a in fast trade speech,Trade Common erosion
