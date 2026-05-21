@@ -1,0 +1,8 @@
+domain,donor_stratum,pressure,notes
+navigation,nordic_anglic,0.25,Ship and route terms often absorb frontier navigation loans
+trade,sino_trade,0.20,Market slang and short transaction words borrow readily
+law,latin_legal,0.10,Legal vocabulary resists replacement but standardizes hard
+military,nordic_anglic,0.20,Fleet and command words accept hard frontier loans
+temple,archaic_romance,0.05,Temple vocabulary resists loan pressure
+frontier,contact_creole,0.35,Local survival vocabulary mutates quickly
+administration,boardroom_standard,0.15,Bureaucratic terminology standardizes across worlds
