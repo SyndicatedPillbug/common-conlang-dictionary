@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 
 from kharvunic.domains import suggest_domains
-from kharvunic.evolution_v2 import EvolutionEngineV2
+from kharvunic.evolution_v3 import EvolutionEngineV3
 from kharvunic.history import HISTORY_PATH, append_history
 
 DICT_PATH = Path('data/dictionary.csv')
@@ -30,10 +30,10 @@ def load_dictionary_v2(path: Path = DICT_PATH):
     return load_dictionary_v1(path)
 
 
-def evolve_with_overrides(source: str, register: str):
-    """Backward-compatible workflow wrapper now powered by EvolutionEngineV2."""
-    engine = EvolutionEngineV2()
-    return engine.evolve(source, register)
+def evolve_with_overrides(source: str, register: str, meaning: str = ''):
+    """Backward-compatible workflow wrapper now powered by EvolutionEngineV3."""
+    engine = EvolutionEngineV3()
+    return engine.evolve(source, meaning, register)
 
 
 def find_existing_entry(word: str, register: str, path: Path = DICT_PATH) -> list[dict]:
@@ -46,7 +46,7 @@ def find_existing_entry(word: str, register: str, path: Path = DICT_PATH) -> lis
 
 
 def save_blocker_reason(result: dict) -> str:
-    """Return an empty string when a v2 evolution result is canonical-saveable.
+    """Return an empty string when an evolution result is canonical-saveable.
 
     Weak and failing candidates are useful diagnostics, but they should not enter
     the canonical dictionary by accident. The app can still show their lineage;
@@ -145,7 +145,7 @@ def save_evolution_result(
 ):
     blocker = save_blocker_reason(result)
     if blocker:
-        raise ValueError('Cannot save v2 result: ' + blocker)
+        raise ValueError('Cannot save evolution result: ' + blocker)
 
     return save_word_entry(
         word=result['result'],

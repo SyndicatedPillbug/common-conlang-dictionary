@@ -16,6 +16,11 @@ from kharvunic.ipa import to_ipa
 from kharvunic.diagnostics import diagnose_evolution
 
 
+def _visible_rule_notes(trace: List[V3Step]) -> list[str]:
+    """Return notes from epochs that actually changed the surface form."""
+    return [step.note for step in trace[1:] if step.note and step.note != 'no visible change']
+
+
 @dataclass(frozen=True)
 class V3Step:
     epoch: str
@@ -159,29 +164,54 @@ class EvolutionEngineV3:
         fc = FractalChoice(source, meaning, register, seed)
         current = normalize_source(source)
         trace: List[V3Step] = [V3Step('source', current, 'normalized source')]
+        mechanical_result = current
 
         for label, func in [
             ('epoch 1: early divergence', epoch_1_inherited),
             ('epoch 2: expansion contact', epoch_2_contact),
         ]:
+            before = current
             current, notes = func(current, fc)
-            trace.append(V3Step(label, current, '; '.join(notes) if notes else 'no visible change'))
+            note = '; '.join(notes) if notes else 'no visible change'
+            trace.append(V3Step(label, current, note))
+            if current != before:
+                mechanical_result = current
 
+        before = current
         current, notes = epoch_3_imperial(current, fc, register)
-        trace.append(V3Step('epoch 3: imperial standardization', current, '; '.join(notes) if notes else 'no visible change'))
+        note = '; '.join(notes) if notes else 'no visible change'
+        trace.append(V3Step('epoch 3: imperial standardization', current, note))
+        if current != before:
+            mechanical_result = current
 
+        before = current
         current, notes = epoch_4_register(current, fc, register)
-        trace.append(V3Step('epoch 4: register split', current, '; '.join(notes) if notes else 'no visible change'))
+        note = '; '.join(notes) if notes else 'no visible change'
+        trace.append(V3Step('epoch 4: register split', current, note))
+        if current != before:
+            mechanical_result = current
 
-        diagnostics = diagnose_evolution(source, current, trace)
+        rules_fired = _visible_rule_notes(trace)
+
+        diagnostics = diagnose_evolution(
+            source,
+            current,
+            trace,
+            rule_count=len(rules_fired),
+            override_applied=False,
+        )
 
         return {
             'source': source,
             'meaning': meaning,
             'register': register,
+            'mechanical_result': mechanical_result,
             'result': current,
             'ipa': to_ipa(current),
             'trace': trace,
+            'rules_fired': rules_fired,
+            'override_applied': False,
+            'override_reason': '',
             'diagnostics': diagnostics,
         }
 

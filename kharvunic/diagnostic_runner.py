@@ -1,21 +1,21 @@
 from pathlib import Path
 import pandas as pd
 
-from kharvunic.evolution_v2 import EvolutionEngineV2
+from kharvunic.evolution_v3 import EvolutionEngineV3
 
 DIAGNOSTIC_ROOTS = Path('data/diagnostic_roots.csv')
 
 
 def run_diagnostics(path: Path = DIAGNOSTIC_ROOTS):
     roots = pd.read_csv(path).fillna('')
-    engine = EvolutionEngineV2()
+    engine = EvolutionEngineV3()
 
     rows = []
 
     for _, row in roots.iterrows():
         root = row['root']
         for register in ['temple', 'boardroom', 'trade']:
-            result = engine.evolve(root, register)
+            result = engine.evolve(root, row.get('meaning', ''), register)
             diag = result['diagnostics']
             rows.append({
                 'root': root,
