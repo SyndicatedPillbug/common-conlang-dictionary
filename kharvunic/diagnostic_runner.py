@@ -20,9 +20,11 @@ def run_diagnostics(path: Path = DIAGNOSTIC_ROOTS):
             rows.append({
                 'root': root,
                 'meaning': row['meaning'],
+                'expected_pressure': row.get('expected_pressure', ''),
                 'register': register,
                 'result': result['result'],
                 'ipa': result['ipa'],
+                'health': diag['health'],
                 'rules_fired': len(result['rules_fired']),
                 'source_similarity': diag['source_similarity'],
                 'warnings': '; '.join(diag['warnings']),

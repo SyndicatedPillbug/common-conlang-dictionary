@@ -1,3 +1,5 @@
+"""Legacy v1 launcher kept for development/reference only. Use `streamlit run app.py` for the v2 workbench."""
+
 import streamlit as st
 
 from kharvunic.ui import evolution_v1_page
@@ -10,6 +12,7 @@ from kharvunic.ui import source_validation_page
 from kharvunic.ui import export_page
 
 st.set_page_config(page_title='Kharvunic Workbench v1', layout='wide')
+st.warning('Legacy/development launcher. Use `streamlit run app.py` for the consolidated v2 workbench.')
 
 st.title('Kharvunic Workbench v1')
 st.caption('Temple Common / Boardroom Common / Trade Common diachronic workbench')

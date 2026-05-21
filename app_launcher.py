@@ -1,3 +1,5 @@
+"""Legacy partial launcher kept for development/reference only. Use `streamlit run app.py` for the consolidated v2 workbench."""
+
 import streamlit as st
 
 from kharvunic.ui import evolution_page
@@ -5,6 +7,7 @@ from kharvunic.ui import phrase_page
 from kharvunic.ui import dictionary_page
 
 st.set_page_config(page_title='Kharvunic Workbench', layout='wide')
+st.warning('Legacy/development launcher. Use `streamlit run app.py` for the consolidated v2 workbench.')
 
 st.title('Kharvunic Workbench')
 

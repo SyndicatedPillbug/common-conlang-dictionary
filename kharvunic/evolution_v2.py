@@ -74,7 +74,13 @@ class EvolutionEngineV2:
             override_applied = False
             override_reason = ''
 
-        diagnostics = diagnose_evolution(source, final, trace)
+        diagnostics = diagnose_evolution(
+            source,
+            final,
+            trace,
+            rule_count=len(fired),
+            override_applied=override_applied,
+        )
 
         return {
             'source': source,

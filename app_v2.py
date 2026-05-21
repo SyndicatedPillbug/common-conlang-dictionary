@@ -1,9 +1,12 @@
+"""Legacy prototype launcher kept for development/reference only. Use `streamlit run app.py` for the consolidated v2 workbench."""
+
 import streamlit as st
 from kharvunic.engine import Evolver
 from kharvunic.ipa import to_ipa
 from kharvunic.dictionary import load_dictionary, save_entry, fuzzy_search
 
 st.title('Kharvunic Evolution Engine')
+st.warning('Legacy/development launcher. Use `streamlit run app.py` for the consolidated v2 workbench.')
 
 mode = st.sidebar.selectbox(
     'Mode',

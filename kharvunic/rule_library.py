@@ -80,7 +80,7 @@ def load_rules(path: Path) -> List[Rule]:
                 attribution=str(row["attribution"]),
             )
         )
-    return sorted(rules, key=lambda rule: (rule.stage, rule.register, rule.order, rule.id))
+    return sorted(rules, key=lambda rule: (rule.order, rule.stage, rule.register, rule.id))
 
 
 def save_rules(path: Path, rules_df: pd.DataFrame) -> None:
@@ -98,7 +98,7 @@ def save_rules(path: Path, rules_df: pd.DataFrame) -> None:
             description=str(row["description"]),
             attribution=str(row["attribution"]),
         )
-    rules_df[RULE_COLUMNS].sort_values(["stage", "register", "order", "id"]).to_csv(path, index=False)
+    rules_df[RULE_COLUMNS].sort_values(["order", "stage", "register", "id"]).to_csv(path, index=False)
 
 
 def select_rules(rules: Iterable[Rule], register: str) -> List[Rule]:
@@ -107,4 +107,4 @@ def select_rules(rules: Iterable[Rule], register: str) -> List[Rule]:
         rule for rule in rules
         if rule.enabled and rule.register in {"all", register}
     ]
-    return sorted(selected, key=lambda rule: (rule.stage, rule.order, rule.id))
+    return sorted(selected, key=lambda rule: (rule.order, rule.stage, rule.register, rule.id))

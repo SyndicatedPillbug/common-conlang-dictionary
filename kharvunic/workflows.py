@@ -1,11 +1,9 @@
 from pathlib import Path
 import pandas as pd
 
-from kharvunic.evolution import EvolutionEngine
-from kharvunic.ipa import to_ipa
-from kharvunic.overrides import find_override
-from kharvunic.history import append_history
 from kharvunic.domains import suggest_domains
+from kharvunic.evolution_v2 import EvolutionEngineV2
+from kharvunic.history import HISTORY_PATH, append_history
 
 DICT_PATH = Path('data/dictionary.csv')
 DICT_COLUMNS = [
@@ -27,42 +25,44 @@ def load_dictionary_v1(path: Path = DICT_PATH):
     return df[DICT_COLUMNS]
 
 
+def load_dictionary_v2(path: Path = DICT_PATH):
+    return load_dictionary_v1(path)
+
+
 def evolve_with_overrides(source: str, register: str):
-    engine = EvolutionEngine()
-    result = engine.evolve(source, register)
-
-    override = find_override(source, register)
-    if override:
-        result_dict = {
-            'source': result.source,
-            'register': result.register,
-            'result': override['override'],
-            'ipa': to_ipa(override['override']),
-            'trace': result.trace,
-            'override_applied': True,
-            'override_reason': override['reason'],
-        }
-    else:
-        result_dict = {
-            'source': result.source,
-            'register': result.register,
-            'result': result.result,
-            'ipa': result.ipa,
-            'trace': result.trace,
-            'override_applied': False,
-            'override_reason': '',
-        }
-
-    return result_dict
+    """Backward-compatible workflow wrapper now powered by EvolutionEngineV2."""
+    engine = EvolutionEngineV2()
+    return engine.evolve(source, register)
 
 
-def save_word_entry(word, ipa, register, meaning, source_root, domain='', notes=''):
+def find_existing_entry(word: str, register: str, path: Path = DICT_PATH) -> list[dict]:
+    df = load_dictionary_v1(path)
+    mask = (
+        (df['word'].str.lower() == word.lower()) &
+        (df['register'].str.lower() == register.lower())
+    )
+    return df[mask].to_dict(orient='records')
+
+
+def save_word_entry(
+    word,
+    ipa,
+    register,
+    meaning,
+    source_root,
+    domain='',
+    notes='',
+    path: Path = DICT_PATH,
+    history_path: Path = HISTORY_PATH,
+    reason='saved through v2 workflow',
+):
     assert word.strip(), 'word is required'
+    assert ipa.strip(), 'ipa is required'
     assert register.strip(), 'register is required'
     assert meaning.strip(), 'meaning is required'
     assert source_root.strip(), 'source_root is required'
 
-    df = load_dictionary_v1()
+    df = load_dictionary_v1(path)
 
     mask = (
         (df['word'].str.lower() == word.lower()) &
@@ -78,6 +78,8 @@ def save_word_entry(word, ipa, register, meaning, source_root, domain='', notes=
         suggestions = suggest_domains(meaning)
         domain = suggestions[0] if suggestions else ''
 
+    assert domain.strip(), 'domain is required'
+
     row = {
         'word': word,
         'ipa': ipa,
@@ -89,14 +91,15 @@ def save_word_entry(word, ipa, register, meaning, source_root, domain='', notes=
     }
 
     df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
-    df[DICT_COLUMNS].sort_values('word').to_csv(DICT_PATH, index=False)
+    df[DICT_COLUMNS].sort_values(['register', 'word']).to_csv(path, index=False)
 
     append_history(
         word=word,
         register=register,
         previous_form=previous,
         new_form=str(row),
-        reason='saved through v1 workflow',
+        reason=reason,
+        path=history_path,
     )
 
     return row

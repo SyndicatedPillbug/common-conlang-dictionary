@@ -1,3 +1,5 @@
+"""Legacy modular workbench launcher kept for development/reference only. Use `streamlit run app.py` for the consolidated v2 workbench."""
+
 import streamlit as st
 
 from kharvunic.ui import dictionary_page
@@ -10,6 +12,7 @@ from kharvunic.ui import rules_page
 from kharvunic.ui import source_validation_page
 
 st.set_page_config(page_title='Kharvunic Workbench', layout='wide')
+st.warning('Legacy/development launcher. Use `streamlit run app.py` for the consolidated v2 workbench.')
 
 st.title('Kharvunic Workbench')
 st.caption('Diachronic dictionary, lineage tracer, and register workbench.')
