@@ -1,0 +1,39 @@
+id,stage,register,order,enabled,pattern,replacement,description,attribution
+c010,orthography,all,10,true,ae,e,Collapse Latin ae,Romance regularization
+c020,orthography,all,20,true,oe,e,Collapse Latin oe,Romance regularization
+c030,orthography,all,30,true,qu,k,Simplify qu,Commonwealth orthographic leveling
+c040,orthography,all,40,true,c(?=[eiy]),sh,Palatalize soft c to sh,Romance palatalization plus Kharvunic standardization
+c050,orthography,all,50,true,g(?=[eiy]),zh,Palatalize soft g to zh,Romance palatalization plus Kharvunic standardization
+c060,early,all,60,true,ph,f,Simplify ph,Orthographic leveling
+c070,early,all,70,true,ct,kt,Retain and harden legal cluster,Legal conservatism
+c080,early,all,80,true,pt,ft,Lenite pt to ft,Commonwealth erosion
+c090,early,all,90,true,mb,mv,Shift mb to mv for easier flow,Long-term bilabial smoothing
+c100,early,all,100,true,nd,dh,Shift nd to dh in inherited common forms,Kharvunic dental drift
+c110,middle,all,110,true,ti,sh,Palatalize ti,Long-term erosion model
+c120,middle,all,120,true,li(?=[aeiou]),ly,Palatalize li before vowel,Liturgical flowing tendency
+c130,middle,all,130,true,ri(?=[aeiou]),ry,Palatalize ri before vowel,Liturgical flowing tendency
+c140,middle,all,140,true,ar(e)?$,ar,Reduce Latin -are to -ar,Verb ending erosion
+c150,middle,all,150,true,er(e)?$,er,Reduce Latin -ere to -er,Verb ending erosion
+c160,middle,all,160,true,ir(e)?$,ir,Reduce Latin -ire to -ir,Verb ending erosion
+c170,late,all,170,true,us$,,Drop Latin -us,Anti-Latinate erosion
+c180,late,all,180,true,um$,,Drop Latin -um,Anti-Latinate erosion
+c190,late,all,190,true,is$,,Drop Latin -is,Anti-Latinate erosion
+c200,late,all,200,true,a$,,Drop final unstressed a,Common speech erosion
+c210,late,all,210,true,o$,,Drop final unstressed o,Common speech erosion
+c220,late,all,220,true,e$,,Drop final unstressed e,Common speech erosion
+t010,temple,temple,300,true,ar$,ār,Temple lengthens final verbal ar,Temple chant preservation
+t020,temple,temple,310,true,er$,ēr,Temple lengthens final verbal er,Temple chant preservation
+t030,temple,temple,320,true,ir$,īr,Temple lengthens final verbal ir,Temple chant preservation
+t040,temple,temple,330,true,mv,mb,Temple preserves older nasal-stop texture,Liturgical archaism
+t050,temple,temple,340,true,ly,li,Temple restores liquid vowel sequence,Liturgical clarity
+t060,temple,temple,350,true,zher,zhēra,Temple restores mercy-root vowel,Poetic restoration
+b010,boardroom,boardroom,300,true,kt,kr,Boardroom hardens kt to kr,Legal prestige standardization
+b020,boardroom,boardroom,310,true,ar$,a,Boardroom clips infinitive-like ending,Executive compression
+b030,boardroom,boardroom,320,true,er$,e,Boardroom clips er ending,Executive compression
+b040,boardroom,boardroom,330,true,ir$,i,Boardroom clips ir ending,Executive compression
+tr010,trade,trade,300,true,zh,j,Trade reduces zh,Contact simplification
+tr020,trade,trade,310,true,sh,s,Trade reduces sh,Contact simplification
+tr030,trade,trade,320,true,kh,k,Trade reduces kh,Contact simplification
+tr040,trade,trade,330,true,ar$,,Trade drops ar ending,Fast speech erosion
+tr050,trade,trade,340,true,er$,,Trade drops er ending,Fast speech erosion
+tr060,trade,trade,350,true,ir$,,Trade drops ir ending,Fast speech erosion
