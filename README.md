@@ -33,7 +33,7 @@ streamlit run app.py
 1. evolve one word with visible diagnostics,
 2. inspect full lineage with rule IDs and explanations,
 3. compare Temple, Boardroom, and Trade forms side by side,
-4. save complete dictionary entries with collision warnings and history,
+4. save complete dictionary entries with collision warnings and history, while blocking weak/failing candidates from canonical save,
 5. run the diagnostic root corpus and inspect root health.
 
 Legacy/development launchers remain in the repository for reference only:
@@ -51,7 +51,7 @@ Do not treat those files as the primary app path.
 python -m pytest
 ```
 
-The test suite includes a guard for the previous fake-success failure mode: `ambulare` must not silently return `ambulare` as a successful evolution.
+The test suite includes guards for the previous fake-success failure modes: `ambulare` must not silently return `ambulare`, and weak/failing candidates must not be canonical-saveable.
  
 ## Structure
 
@@ -75,7 +75,7 @@ walk
 temple
 ```
 
-The app should show visible lineage, such as a sequence from the source through intermediate transformed forms to the final Temple form, or it should loudly report that the rule set is insufficient. It should never silently present an unchanged source form as success.
+The app should show visible lineage: `ambulare → amvulare → amvular → amvulār`. It should never silently present an unchanged source form, or a weak candidate, as a successful canonical result.
 
 Input:
 

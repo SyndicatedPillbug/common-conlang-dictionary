@@ -13,13 +13,24 @@ def suggest_domains(meaning: str):
 
     mapping = {
         'contract': 'law',
+        'obligation': 'law',
         'debt': 'trade',
+        'market': 'trade',
         'prayer': 'temple',
+        'sacred': 'temple',
         'ship': 'navigation',
+        'walk': 'body',
+        'movement': 'body',
+        'tear': 'emotion',
+        'weep': 'emotion',
+        'mercy': 'emotion',
         'fear': 'emotion',
         'star': 'cosmology',
+        'heaven': 'cosmology',
         'fleet': 'military',
+        'guard': 'military',
         'tax': 'administration',
+        'answer': 'administration',
         'hymn': 'poetry',
     }
 

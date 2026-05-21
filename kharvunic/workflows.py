@@ -15,6 +15,7 @@ DICT_COLUMNS = [
     'domain',
     'notes',
 ]
+SAVEABLE_HEALTH = {'passing'}
 
 
 def load_dictionary_v1(path: Path = DICT_PATH):
@@ -42,6 +43,34 @@ def find_existing_entry(word: str, register: str, path: Path = DICT_PATH) -> lis
         (df['register'].str.lower() == register.lower())
     )
     return df[mask].to_dict(orient='records')
+
+
+def save_blocker_reason(result: dict) -> str:
+    """Return an empty string when a v2 evolution result is canonical-saveable.
+
+    Weak and failing candidates are useful diagnostics, but they should not enter
+    the canonical dictionary by accident. The app can still show their lineage;
+    saving requires fixing the rule set or adding a deliberate override first.
+    """
+    diagnostics = result.get('diagnostics', {})
+    health = diagnostics.get('health', 'weak')
+    warnings = diagnostics.get('warnings', [])
+
+    if health not in SAVEABLE_HEALTH:
+        detail = '; '.join(warnings) if warnings else f'health={health}'
+        return (
+            'candidate health is not passing. Fix the rule set or add an explicit '
+            f'override before saving. Details: {detail}'
+        )
+
+    if warnings:
+        return 'candidate has unresolved diagnostics: ' + '; '.join(warnings)
+
+    return ''
+
+
+def is_saveable_result(result: dict) -> bool:
+    return save_blocker_reason(result) == ''
 
 
 def save_word_entry(
@@ -103,3 +132,30 @@ def save_word_entry(
     )
 
     return row
+
+
+def save_evolution_result(
+    result: dict,
+    meaning: str,
+    domain: str,
+    notes: str = '',
+    path: Path = DICT_PATH,
+    history_path: Path = HISTORY_PATH,
+    reason: str = 'saved through v2 workbench',
+):
+    blocker = save_blocker_reason(result)
+    if blocker:
+        raise ValueError('Cannot save v2 result: ' + blocker)
+
+    return save_word_entry(
+        word=result['result'],
+        ipa=result['ipa'],
+        register=result['register'],
+        meaning=meaning,
+        source_root=result['source'],
+        domain=domain,
+        notes=notes,
+        path=path,
+        history_path=history_path,
+        reason=reason,
+    )

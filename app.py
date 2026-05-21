@@ -8,7 +8,7 @@ from kharvunic.diagnostic_runner import run_diagnostics
 from kharvunic.domains import load_domains, suggest_domains
 from kharvunic.evolution_v2 import EvolutionEngineV2
 from kharvunic.history import load_history
-from kharvunic.workflows import find_existing_entry, load_dictionary_v2, save_word_entry
+from kharvunic.workflows import find_existing_entry, load_dictionary_v2, save_blocker_reason, save_evolution_result
 
 REGISTERS = ['temple', 'boardroom', 'trade']
 REGISTER_LABELS = {
@@ -73,6 +73,13 @@ def diagnostics_text(result: dict) -> str:
     return '; '.join(warnings)
 
 
+def diagnostics_notes_text(result: dict) -> str:
+    notes = result['diagnostics'].get('notes', [])
+    if not notes:
+        return ''
+    return '; '.join(notes)
+
+
 def render_diagnostic_banner(result: dict) -> None:
     diagnostics = result['diagnostics']
     health = diagnostics.get('health', 'weak')
@@ -100,6 +107,7 @@ def result_summary_rows(results: dict[str, dict]) -> pd.DataFrame:
             'rules_fired': len(result['rules_fired']),
             'source_similarity': result['diagnostics']['source_similarity'],
             'warnings': diagnostics_text(result),
+            'notes': diagnostics_notes_text(result),
         }
         for register, result in results.items()
     ])
@@ -123,6 +131,9 @@ def default_notes(result: dict) -> str:
     warnings = diagnostics_text(result)
     if warnings != 'No warnings.':
         notes.append(f"diagnostics={warnings}")
+    diagnostic_notes = diagnostics_notes_text(result)
+    if diagnostic_notes:
+        notes.append(f"diagnostic_notes={diagnostic_notes}")
     return '; '.join(notes)
 
 
@@ -130,7 +141,8 @@ def render_result(result: dict) -> None:
     render_diagnostic_banner(result)
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric('Final form', result['result'])
+    form_label = 'Final form' if result['diagnostics'].get('health') == 'passing' else 'Candidate form'
+    c1.metric(form_label, result['result'])
     c2.metric('IPA', result['ipa'])
     c3.metric('Rules fired', len(result['rules_fired']))
     c4.metric('Health', HEALTH_ICON.get(result['diagnostics'].get('health'), 'CHECK'))
@@ -138,10 +150,23 @@ def render_result(result: dict) -> None:
     if result['override_applied']:
         st.info(f"Override applied: {result['override_reason']}")
 
+    diagnostic_notes = diagnostics_notes_text(result)
+    if diagnostic_notes:
+        st.info('Diagnostic note: ' + diagnostic_notes)
+
     render_lineage(result)
 
 
 def render_save_panel(result: dict, default_meaning: str, key_prefix: str) -> None:
+    blocker = save_blocker_reason(result)
+    if blocker:
+        st.subheader('Save final v2 form')
+        st.error('Not saveable yet: ' + blocker)
+        st.caption(
+            'This candidate can be inspected, but it should not enter the canonical dictionary until the rules or overrides make it a passing v2 result.'
+        )
+        return
+
     st.subheader('Save final v2 form')
 
     existing = find_existing_entry(result['result'], result['register'])
@@ -162,7 +187,7 @@ def render_save_panel(result: dict, default_meaning: str, key_prefix: str) -> No
     suggested_index = options.index(suggested) if suggested in options else 0
 
     with st.form(f'{key_prefix}_save_form'):
-        meaning = st.text_input('Meaning', value=default_meaning, key=f'{key_prefix}_meaning')
+        meaning = st.text_input('Meaning', value=default_meaning, key=f'{key_prefix}_save_meaning')
         domain = st.selectbox(
             'Semantic domain',
             options=options,
@@ -190,16 +215,17 @@ def render_save_panel(result: dict, default_meaning: str, key_prefix: str) -> No
         st.error('Not saved. Choose a semantic domain so the dictionary entry is complete.')
         return
 
-    saved = save_word_entry(
-        word=result['result'],
-        ipa=result['ipa'],
-        register=result['register'],
-        meaning=meaning,
-        source_root=result['source'],
-        domain=domain,
-        notes=notes,
-        reason='saved through v2 workbench',
-    )
+    try:
+        saved = save_evolution_result(
+            result=result,
+            meaning=meaning,
+            domain=domain,
+            notes=notes,
+            reason='saved through v2 workbench',
+        )
+    except ValueError as exc:
+        st.error(str(exc))
+        return
     st.success(f"Saved {saved['word']} to data/dictionary.csv and recorded data/dictionary_history.csv.")
 
 
@@ -215,12 +241,12 @@ def evolve_page() -> None:
 
     if submitted:
         st.session_state['single_result'] = get_engine().evolve(source, register)
-        st.session_state['single_meaning'] = meaning
+        st.session_state['single_default_meaning'] = meaning
 
     result = st.session_state.get('single_result')
     if result:
         render_result(result)
-        render_save_panel(result, st.session_state.get('single_meaning', ''), 'single')
+        render_save_panel(result, st.session_state.get('single_default_meaning', ''), 'single')
 
 
 def compare_page() -> None:
@@ -234,7 +260,7 @@ def compare_page() -> None:
 
     if submitted:
         st.session_state['comparison'] = get_engine().compare(source)
-        st.session_state['comparison_meaning'] = meaning
+        st.session_state['comparison_default_meaning'] = meaning
 
     comparison = st.session_state.get('comparison')
     if not comparison:
@@ -261,7 +287,7 @@ def compare_page() -> None:
         format_func=REGISTER_LABELS.get,
         key='comparison_save_register',
     )
-    render_save_panel(comparison[selected], st.session_state.get('comparison_meaning', ''), f'comparison_{selected}')
+    render_save_panel(comparison[selected], st.session_state.get('comparison_default_meaning', ''), f'comparison_{selected}')
 
 
 def diagnostics_page() -> None:

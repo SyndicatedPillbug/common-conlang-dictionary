@@ -55,7 +55,7 @@ The default `app.py` workbench supports five end-to-end workflows.
 1. Evolve a word with `EvolutionEngineV2`, including loud warnings for unchanged or weakly changed forms.
 2. Inspect full lineage with each intermediate form, rule ID, and rule explanation.
 3. Compare Temple, Boardroom, and Trade outputs side by side with diagnostics for each register.
-4. Save complete dictionary entries: final form, IPA, register, meaning, source root, semantic domain, notes, and history entry.
+4. Save complete dictionary entries: final form, IPA, register, meaning, source root, semantic domain, notes, and history entry. Weak or failing candidates are blocked from canonical save until rules or overrides are fixed.
 5. Run the diagnostic root corpus and view root health as passing, weak, or failing.
 
 ## Legacy Launchers
@@ -95,7 +95,8 @@ Trade Common preserves erosion, compression, and contact-language simplification
 1. Enter or validate a source root.
 2. Evolve it through one register or compare all registers.
 3. Inspect lineage and diagnostic health.
-4. Review exact and near collisions.
-5. Assign a semantic domain and notes.
-6. Save into the canonical dictionary.
-7. Use diagnostics to improve rules systematically.
+4. If the candidate is weak or failing, fix the rule set or add an explicit override before saving.
+5. Review exact and near collisions.
+6. Assign a semantic domain and notes.
+7. Save passing results into the canonical dictionary.
+8. Use diagnostics to improve rules systematically.

@@ -19,7 +19,7 @@ def _normalized(value: str) -> str:
 
 def classify_evolution(source: str, result: str, rule_applications: int, warnings: list[str]) -> str:
     """Classify root health for UI and diagnostic corpus reporting."""
-    if _normalized(source) == _normalized(result) or rule_applications == 0:
+    if _normalized(source) == _normalized(result) or rule_applications == 0 and warnings:
         return FAILING
     if warnings:
         return WEAK
@@ -38,24 +38,35 @@ def diagnose_evolution(
     ``rule_count`` counts mechanical sound-change rules. ``trace`` can include
     non-rule events such as overrides, so callers that know the fired rule list
     should pass its length to avoid treating an override as rule coverage.
+
+    Explicit overrides are deliberate, auditable lexical decisions. They should
+    not be classified as weak just because the mechanical rule path is short,
+    but they still fail if they leave a form unchanged or too close to source.
     """
     applications = max(0, len(trace) - 1) if rule_count is None else max(0, rule_count)
     sim = similarity(source, result)
 
     warnings: list[str] = []
+    notes: list[str] = []
 
-    if _normalized(source) == _normalized(result):
+    unchanged = _normalized(source) == _normalized(result)
+
+    if unchanged:
         warnings.append('Result is unchanged from source; the current rule set is insufficient for this root.')
 
     if applications == 0:
-        warnings.append('No sound-change rules fired.')
+        if override_applied and not unchanged:
+            notes.append('Override supplied the final form; no mechanical sound-change rules fired.')
+        else:
+            warnings.append('No sound-change rules fired.')
+
     elif applications < MIN_RULE_APPLICATIONS:
-        warnings.append('Very few sound-change rules fired.')
+        if override_applied:
+            notes.append('Override supplied the canonical form after a short mechanical path.')
+        else:
+            warnings.append('Very few sound-change rules fired.')
 
-    if override_applied and applications == 0:
-        warnings.append('Only an override changed the form; mechanical rule coverage is empty.')
-
-    if sim >= MAX_SOURCE_SIMILARITY and _normalized(source) != _normalized(result):
+    if sim >= MAX_SOURCE_SIMILARITY and not unchanged:
         warnings.append('Result remains too close to source form.')
 
     health = classify_evolution(source, result, applications, warnings)
@@ -65,4 +76,5 @@ def diagnose_evolution(
         'rule_applications': applications,
         'source_similarity': round(sim, 3),
         'warnings': warnings,
+        'notes': notes,
     }

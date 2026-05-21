@@ -24,7 +24,7 @@ c220,late,all,220,true,e$,,Drop final unstressed e,Common speech erosion
 t010,temple,temple,300,true,ar$,ār,Temple lengthens final verbal ar,Temple chant preservation
 t020,temple,temple,310,true,er$,ēr,Temple lengthens final verbal er,Temple chant preservation
 t030,temple,temple,320,true,ir$,īr,Temple lengthens final verbal ir,Temple chant preservation
-t040,temple,temple,330,true,mv,mb,Temple preserves older nasal-stop texture,Liturgical archaism
+t040,temple,temple,330,false,mv,mb,Disabled blanket mv-to-mb restoration after ambulare regression,Liturgical archaism under review
 t050,temple,temple,340,true,ly,li,Temple restores liquid vowel sequence,Liturgical clarity
 t060,temple,temple,350,true,zher,zhēra,Temple restores mercy-root vowel,Poetic restoration
 b010,boardroom,boardroom,300,true,kt,kr,Boardroom hardens kt to kr,Legal prestige standardization
